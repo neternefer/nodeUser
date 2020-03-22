@@ -1,0 +1,35 @@
+{
+  "name": "nodeuser",
+  "version": "1.0.0",
+  "description": "User signup/login",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neternefer/nodeUser.git"
+  },
+  "author": "neternefer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neternefer/nodeUser/issues"
+  },
+  "homepage": "https://github.com/neternefer/nodeUser#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-mongo": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "mongo-store": "0.0.2",
+    "mongoose": "^5.9.5",
+    "nodemailer": "^6.4.6",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
