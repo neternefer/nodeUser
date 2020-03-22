@@ -12,6 +12,7 @@ router.post('/', async(req, res, next) => {
     user.password = req.body.password;
     await user.save((err, doc) => {
         if(!err){
+            console.log('Redirect to login');
             res.send(doc);
         }else{
             if(err.code === 11000){
