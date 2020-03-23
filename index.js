@@ -7,6 +7,7 @@ const User = require('./models/user');
 const MongoStore = require('connect-mongo')(session);
 const register = require('./routes/register');
 const reset = require('./routes/reset');
+const recover = require('./routes/recover');
 const passport = require('passport');
 const passportLocal = require('./passport/passportLocal');
 const app = express();
@@ -22,6 +23,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session())
 app.use('/register', register);
+app.use('/recover', recover);
 app.use('/reset', reset);
 
 
@@ -46,7 +48,7 @@ app.use((err, req, res, next) => {
         Object.keys(err.errors).forEach(key => valErrors.push(err.errors[key].message));
         res.status(422).send(valErrors);
     }else{
-        res.status(422).send(err.message)
+        res.send(err.message)
     }
 });
 

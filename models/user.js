@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -21,7 +22,7 @@ const userSchema = new mongoose.Schema({
     resetTokenExp: {
         type: Date
     }
-});
+}, {timestamps: true});
 
 userSchema.path('email').validate((val) => {
     emailRegex = /^\S+@\S+\.\S+$/;
@@ -29,6 +30,8 @@ userSchema.path('email').validate((val) => {
 }, 'Invalid email address format');
 
 userSchema.pre('save', function(next){
+    const user = this;
+    if(!user.isModified('password')) return next();
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(this.password, salt, (err, hash) => {
             this.password = hash;
@@ -37,4 +40,9 @@ userSchema.pre('save', function(next){
     });
 });
 
+userSchema.methods.genResetToken = function(){
+    this.resetToken = crypto.randomBytes(20).toString('hex');
+    this.resetTokenExp = Date.now() + 3600000;
+}
+mongoose.set('useFindAndModify', false);
 module.exports = mongoose.model('User', userSchema);

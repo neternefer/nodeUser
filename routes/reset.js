@@ -1,32 +1,36 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const nodeMailer = require('nodemailer');
 const User = require('../models/user');
-const crypto = require('crypto');
+const mailer = require('../nodemailer/mailer');
 
 router.get('/', (req, res) => {
     res.send('GET request for the reset psge');
 });
 
-router.post('/', async (req, res, next) => {
+router.get('/:token', (req, res) => {
+    res.send('GET request to the reset page')
+})
+router.post('/:token', async (req, res, next) => {
+    console.log('starting reset')
     try{
-        const email = req.body.email;
-        if(!email){
-            throw new Error('Email can\'t be empty');
+        const password = req.body.password;
+        if(!password){
+            throw new Error('Password can\'t be empty');
         }
-        const user = await User.findOne({email: email});
-        if(!user){
-            res.send('User not found')
-        }else{
-            let token = crypto.randomBytes(20).toString();
-            token = crypto.createHash('sha256').update('token').digest('hex');
-            await user.updateOne({
-                resetToken: token,
-                resetTokenExp: Date.now() + 3600000
-            });
-            console.log(user.resetToken)
-            res.send('Reset email prepared');
+        console.log(req.params)
+        const user = await User.findOne(
+            {resetToken: req.params.token});
+        if(!user || user.resetTokenExp < Date.now()){
+            res.status(401).send('Password reset token is invalid or has expired.');
         }
+        user.password = password;
+        user.resetToken = undefined;
+        user.resetTokenExp = undefined;
+        await user.save();
+        text = `Dear ${user.name}, your password was successfully reset.`;
+        mailer(user.email, text);
+        res.status(200).send('Confirmation email sent');
     }
     catch (err){
         next(err);
